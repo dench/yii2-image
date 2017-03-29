@@ -12,7 +12,7 @@ use dench\image\models\Image;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class ImageController extends Controller
+class DefaultController extends Controller
 {
     /**
      * @param $name
