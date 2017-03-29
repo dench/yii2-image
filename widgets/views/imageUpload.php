@@ -6,13 +6,19 @@
  * Time: 20:44
  *
  * @var array $images
+ * @var string $size
+ * @var string $modelInputName
+ * @var string $fileInputName
  */
 
+use dench\image\assets\ImageUploadAsset;
 use dench\image\helpers\ImageHelper;
 use kartik\file\FileInput;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+
+ImageUploadAsset::register($this);
 ?>
 
 <div class="form-group field-page-image">
