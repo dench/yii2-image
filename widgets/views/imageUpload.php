@@ -35,7 +35,7 @@ ImageUploadAsset::register($this);
         $html .= '</div>';
         $initialPreview[] = $html;
         $initialPreviewConfig[] = [
-            'url' => Url::to(['/admin/ajax/file-hide']),
+            'url' => Url::to(['/image/ajax/file-hide']),
             'key' => $image->file_id,
         ];
     }
@@ -60,7 +60,7 @@ ImageUploadAsset::register($this);
                 ],
             ],
             'previewFileType' => 'image',
-            'uploadUrl' => Url::to(['/admin/ajax/file-upload']),
+            'uploadUrl' => Url::to(['/image/ajax/file-upload']),
             'uploadExtraData' => [
                 'name' => $modelInputName,
                 'size' => $size,
