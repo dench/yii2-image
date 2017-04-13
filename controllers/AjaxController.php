@@ -37,7 +37,7 @@ class AjaxController extends Controller
                     $html .= '</div>';
                     $initialPreview[] = $html;
                     $initialPreviewConfig[] = [
-                        'url' => Url::to(['/admin/ajax/file-hide']),
+                        'url' => Url::to(['/image/ajax/file-hide']),
                         'key' => $upload['file']->id,
                     ];
                 }
