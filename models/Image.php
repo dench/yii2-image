@@ -164,6 +164,8 @@ class Image extends ActiveRecord
             $y = round(($param['height']-$height)/2);
             $img_new->paste($img, new Point($x, $y));
             $img = $img_new;
+            $width = $param['width'];
+            $height = $param['height'];
         } else {
             // force clip
             $k1 = $param['width']/$model->width;
@@ -178,7 +180,7 @@ class Image extends ActiveRecord
         if ($wm['enabled']) {
             $watermark = \yii\imagine\Image::getImagine()->open($wm['file']);
             $wSize = $watermark->getSize();
-            $bottomRight = new Point($width - $wSize->getWidth() - $wm['x'], $height - $wSize->getHeight() - $wm['y']);
+            $bottomRight = new Point($width/(100/$wm['x']) - $wSize->getWidth()/2, $height/(100/$wm['y']) - $wSize->getHeight()/2);
             $img->paste($watermark, $bottomRight);
         }
 
