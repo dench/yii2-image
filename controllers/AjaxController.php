@@ -19,17 +19,18 @@ class AjaxController extends Controller
 
         if (Yii::$app->request->isAjax) {
 
-            $name = Yii::$app->request->post('name');
+            $modelInputName = Yii::$app->request->post('modelInputName');
+            $fileInputName = Yii::$app->request->post('fileInputName');
             $size = Yii::$app->request->post('size') ? Yii::$app->request->post('size') : 'small';
 
             $model = new UploadFiles();
-            $model->files = UploadedFile::getInstancesByName('files');
+            $model->files = UploadedFile::getInstancesByName($fileInputName);
 
             if ($model->upload()) {
                 $initialPreview = [];
                 $initialPreviewConfig = [];
                 foreach ($model->upload as $key => $upload) {
-                    $html = '<img src="' . ImageHelper::thumb($upload['image']->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $name . '[' . $upload['image']->id . ']" value="' . $upload['image']->id . '">';
+                    $html = '<img src="' . ImageHelper::thumb($upload['image']->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[' . $upload['image']->id . ']" value="' . $upload['image']->id . '">';
                     $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
                     $html .= '<div class="input-group">';
                     $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']name', ['class' => 'form-control input-sm']);
@@ -48,7 +49,7 @@ class AjaxController extends Controller
             }
 
             return [
-                'error' => $model->errors['files'],
+                'error' => $model->errors[$fileInputName],
             ];
         }
         return [
