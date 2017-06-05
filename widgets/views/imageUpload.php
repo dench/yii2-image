@@ -23,7 +23,9 @@ ImageUploadAsset::register($this);
 ?>
 
 <div class="form-group field-page-image">
-    <label class="control-label" for="page-text"><?= $label ?></label>
+    <?php if ($label) : ?>
+        <label class="control-label" for="page-text"><?= $label ?></label>
+    <?php endif; ?>
     <?php
     $initialPreview = [];
     $initialPreviewConfig = [];
