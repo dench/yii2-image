@@ -83,14 +83,14 @@ ImageUploadAsset::register($this);
             ],
             'previewTemplates' => [
                 'generic' => '
-<div class="file-preview-frame kv-preview-thumb drag-handle-init col-sm-4 file-sortable" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
+<div class="file-preview-frame kv-preview-thumb drag-handle-init file-sortable ' . $col . '" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
 <div class="kv-file-content">
     {content}
 </div>
 {footer}
 </div>',
                 'image' => '
-<div class="col-sm-4">
+<div class="' . $col . '">
 <div class="file-preview-frame kv-preview-thumb" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
 <div class="kv-file-content">
     <img src="{data}" class="kv-preview-data file-preview-image" title="{caption}" alt="{caption}" width="100%">
