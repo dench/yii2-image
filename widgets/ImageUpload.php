@@ -22,6 +22,8 @@ class ImageUpload extends Widget
 
     public $col = 'col-sm-4';
 
+    public $label = 'Images';
+
     public function run()
     {
         return $this->render('imageUpload', [
@@ -30,6 +32,7 @@ class ImageUpload extends Widget
             'fileInputName' => $this->fileInputName,
             'modelInputName' => $this->modelInputName,
             'col' => $this->col,
+            'label' => $this->label,
         ]);
     }
 }

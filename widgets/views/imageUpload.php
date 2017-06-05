@@ -9,6 +9,7 @@
  * @var string $size
  * @var string $modelInputName
  * @var string $fileInputName
+ * @var string $label
  */
 
 use dench\image\assets\ImageUploadAsset;
@@ -22,7 +23,7 @@ ImageUploadAsset::register($this);
 ?>
 
 <div class="form-group field-page-image">
-    <label class="control-label" for="page-text">Images</label>
+    <label class="control-label" for="page-text"><?= $label ?></label>
     <?php
     $initialPreview = [];
     $initialPreviewConfig = [];
