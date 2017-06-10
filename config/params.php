@@ -11,7 +11,8 @@ return [
         'path' => 'image',
         'jpeg_quality' => 90,
         'watermark' => [
-            'enabled' => 1,
+            'enabled' => true,
+            'absolute' => false,
             'file' => '@webroot/img/watermark.png',
             'x' => 40,
             'y' => 30

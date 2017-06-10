@@ -180,7 +180,11 @@ class Image extends ActiveRecord
         if ($wm['enabled']) {
             $watermark = \yii\imagine\Image::getImagine()->open($wm['file']);
             $wSize = $watermark->getSize();
-            $bottomRight = new Point($width/(100/$wm['x']) - $wSize->getWidth()/2, $height/(100/$wm['y']) - $wSize->getHeight()/2);
+            if ($wm['absolute']) {
+                $bottomRight = new Point($width - $wSize->getWidth() - $wm['x'], $height - $wSize->getHeight() - $wm['y']);
+            } else {
+                $bottomRight = new Point($width/(100/$wm['x']) - $wSize->getWidth()/2, $height/(100/$wm['y']) - $wSize->getHeight()/2);
+            }
             $img->paste($watermark, $bottomRight);
         }
 
