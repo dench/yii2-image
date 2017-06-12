@@ -116,6 +116,24 @@ class Image extends ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if (count($changedAttributes)) {
+            foreach (Yii::$app->params['image']['size'] as $size => $thumb) {
+                $path = ImageHelper::generatePath($size);
+                $file = Yii::$app->basePath . '/web/' . $path . '/' . $this->name . '.' . $this->file->extension;
+                Yii::error($file, 'Save');
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+    /**
      * @param Image $model
      * @return bool|string
      */

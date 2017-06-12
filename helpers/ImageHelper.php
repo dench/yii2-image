@@ -51,6 +51,7 @@ class ImageHelper
         $path = static::generatePath($size);
 
         $hash = substr(md5(
+            $model->file->hash .
             $model->method .
             $model->rotate .
             $model->mirror .
