@@ -10,6 +10,7 @@
  * @var string $modelInputName
  * @var string $fileInputName
  * @var string $label
+ * @var integer $image_id
  */
 
 use dench\image\assets\ImageUploadAsset;
@@ -30,9 +31,13 @@ ImageUploadAsset::register($this);
     $initialPreview = [];
     $initialPreviewConfig = [];
     foreach ($images as $key => $image) {
-        $html = '<img src="' . ImageHelper::thumb($image->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[' . $key . ']" value="' . $image->id . '">';
-        $html .= Html::activeTextInput($image, '[' . $key . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
+        $html = '<img src="' . ImageHelper::thumb($image->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[image_ids][' . $key . ']" value="' . $image->id . '">';
         $html .= '<div class="input-group">';
+        $html .= Html::activeTextInput($image, '[' . $key . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
+        $html .= '<span class="input-group-addon">';
+        $html .= Html::radio($modelInputName . '[image_id]', ($image->id == $image_id) ? true : false, ['value' => $image->id]);
+        $html .= '</span>';
+        $html .= '</div><div class="input-group">';
         $html .= Html::activeTextInput($image, '[' . $key . ']name', ['class' => 'form-control input-sm']);
         $html .= '<span class="input-group-addon">.' . $image->file->extension . '</span>';
         $html .= '</div>';
@@ -65,7 +70,7 @@ ImageUploadAsset::register($this);
             'previewFileType' => 'image',
             'uploadUrl' => Url::to(['/image/ajax/file-upload']),
             'uploadExtraData' => [
-                'modelInputName' => $modelInputName,
+                'modelInputName' => $modelInputName . '[image_ids]',
                 'fileInputName' => $fileInputName,
                 'size' => $size,
             ],

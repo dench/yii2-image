@@ -18,11 +18,13 @@ class ImageUpload extends Widget
 
     public $fileInputName = 'files';
 
-    public $modelInputName;
+    public $modelInputName = 'Page';
 
     public $col = 'col-sm-4';
 
     public $label = 'Images';
+
+    public $image_id = null;
 
     public function run()
     {
@@ -33,6 +35,7 @@ class ImageUpload extends Widget
             'modelInputName' => $this->modelInputName,
             'col' => $this->col,
             'label' => $this->label,
+            'image_id' => $this->image_id,
         ]);
     }
 }
