@@ -31,8 +31,12 @@ class AjaxController extends Controller
                 $initialPreviewConfig = [];
                 foreach ($model->upload as $key => $upload) {
                     $html = '<img src="' . ImageHelper::thumb($upload['image']->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[' . $upload['image']->id . ']" value="' . $upload['image']->id . '">';
-                    $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
                     $html .= '<div class="input-group">';
+                    $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
+                    $html .= '<span class="input-group-addon">';
+                    $html .= Html::radio($modelInputName . '[image_id]', false);
+                    $html .= '</span>';
+                    $html .= '</div><div class="input-group">';
                     $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']name', ['class' => 'form-control input-sm']);
                     $html .= '<span class="input-group-addon">.' . $upload['file']->extension . '</span>';
                     $html .= '</div>';
