@@ -70,7 +70,7 @@ ImageUploadAsset::register($this);
             'previewFileType' => 'image',
             'uploadUrl' => Url::to(['/image/ajax/file-upload']),
             'uploadExtraData' => [
-                'modelInputName' => $modelInputName . '[image_ids]',
+                'modelInputName' => $modelInputName,
                 'fileInputName' => $fileInputName,
                 'size' => $size,
             ],
