@@ -2,10 +2,9 @@
 
 namespace dench\image\controllers;
 
-use dench\image\helpers\ImageHelper;
 use dench\image\models\UploadFiles;
+use dench\image\widgets\ImageItem;
 use Yii;
-use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
@@ -30,17 +29,13 @@ class AjaxController extends Controller
                 $initialPreview = [];
                 $initialPreviewConfig = [];
                 foreach ($model->upload as $key => $upload) {
-                    $html = '<img src="' . ImageHelper::thumb($upload['image']->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[image_ids][' . $upload['image']->id . ']" value="' . $upload['image']->id . '">';
-                    $html .= '<div class="input-group">';
-                    $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
-                    $html .= '<span class="input-group-addon">';
-                    $html .= Html::radio($modelInputName . '[image_id]', false, ['value' => $upload['image']->id]);
-                    $html .= '</span>';
-                    $html .= '</div><div class="input-group">';
-                    $html .= Html::activeTextInput($upload['image'], '[' . $upload['image']->id . ']name', ['class' => 'form-control input-sm']);
-                    $html .= '<span class="input-group-addon">.' . $upload['file']->extension . '</span>';
-                    $html .= '</div>';
-                    $initialPreview[] = $html;
+                    $initialPreview[] = ImageItem::widget([
+                        'image' => $upload['image'],
+                        'modelInputName' => $modelInputName,
+                        'size' => $size,
+                        'key' => $upload['image']->id,
+                        'enabled' => 1,
+                    ]);
                     $initialPreviewConfig[] = [
                         'url' => Url::to(['/image/ajax/file-hide']),
                         'key' => $upload['file']->id,

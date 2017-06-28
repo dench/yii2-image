@@ -12,6 +12,7 @@ use yii\base\Widget;
 
 class ImageUpload extends Widget
 {
+    /** @var $image dench\image\models\Image[] */
     public $images;
 
     public $size = 'cover';
@@ -26,6 +27,8 @@ class ImageUpload extends Widget
 
     public $image_id = null;
 
+    public $imageEnabled = [];
+
     public function run()
     {
         return $this->render('imageUpload', [
@@ -36,6 +39,7 @@ class ImageUpload extends Widget
             'col' => $this->col,
             'label' => $this->label,
             'image_id' => $this->image_id,
+            'imageEnabled' => $this->imageEnabled,
         ]);
     }
 }

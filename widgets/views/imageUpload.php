@@ -5,7 +5,7 @@
  * Date: 25.03.17
  * Time: 20:44
  *
- * @var array $images
+ * @var $images dench\image\models\Image[]
  * @var string $size
  * @var string $modelInputName
  * @var string $fileInputName
@@ -14,9 +14,8 @@
  */
 
 use dench\image\assets\ImageUploadAsset;
-use dench\image\helpers\ImageHelper;
+use dench\image\widgets\ImageItem;
 use kartik\file\FileInput;
-use yii\helpers\Html;
 use yii\helpers\Url;
 
 
@@ -31,17 +30,14 @@ ImageUploadAsset::register($this);
     $initialPreview = [];
     $initialPreviewConfig = [];
     foreach ($images as $key => $image) {
-        $html = '<img src="' . ImageHelper::thumb($image->id, $size) . '" alt="" width="100%"><input type="hidden" name="' . $modelInputName . '[image_ids][' . $key . ']" value="' . $image->id . '">';
-        $html .= '<div class="input-group">';
-        $html .= Html::activeTextInput($image, '[' . $key . ']alt', ['class' => 'form-control input-sm', 'placeholder' => 'Alt']);
-        $html .= '<span class="input-group-addon">';
-        $html .= Html::radio($modelInputName . '[image_id]', ($image->id == $image_id) ? true : false, ['value' => $image->id]);
-        $html .= '</span>';
-        $html .= '</div><div class="input-group">';
-        $html .= Html::activeTextInput($image, '[' . $key . ']name', ['class' => 'form-control input-sm']);
-        $html .= '<span class="input-group-addon">.' . $image->file->extension . '</span>';
-        $html .= '</div>';
-        $initialPreview[] = $html;
+        $initialPreview[] = ImageItem::widget([
+            'image' => $image,
+            'modelInputName' => $modelInputName,
+            'size' => $size,
+            'key' => $image->id,
+            'cover' => ($image_id == $image->id) ? 1 : 0,
+            'enabled' => @$imageEnabled[$image->id],
+        ]);
         $initialPreviewConfig[] = [
             'url' => Url::to(['/image/ajax/file-hide']),
             'key' => $image->file_id,
