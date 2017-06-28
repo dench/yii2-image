@@ -39,18 +39,9 @@ class ImageHelper
         return $param['path'] . '/' . $dir;
     }
 
-    /**
-     * @param integer $id
-     * @param string $size = big|small|cover|...
-     * @return string
-     */
-    protected static function generateUrl($id, $size)
+    public static function generateHash($model)
     {
-        $model = static::findModel($id);
-
-        $path = static::generatePath($size);
-
-        $hash = substr(md5(
+        return substr(md5(
             $model->file->hash .
             $model->method .
             $model->rotate .
@@ -59,8 +50,25 @@ class ImageHelper
             $model->y .
             $model->zoom
         ), 0, 6);
+    }
 
-        return '/' . $path . '/' . $model->name . '.' . $model->file->extension . '?i=' . $hash;
+    public static function generateName($id)
+    {
+        $model = static::findModel($id);
+
+        return $model->name . '.' . $model->file->extension . '?i=' . static::generateHash($model);
+    }
+
+    /**
+     * @param integer $id
+     * @param string $size = big|small|cover|...
+     * @return string
+     */
+    protected static function generateUrl($id, $size)
+    {
+        $path = static::generatePath($size);
+
+        return '/' . $path . '/' . static::generateName($id);
     }
 
     /**
