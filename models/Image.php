@@ -125,9 +125,10 @@ class Image extends ActiveRecord
             foreach (Yii::$app->params['image']['size'] as $size => $thumb) {
                 $path = ImageHelper::generatePath($size);
                 $file = Yii::$app->basePath . '/web/' . $path . '/' . $this->name . '.' . $this->file->extension;
-                Yii::error($file, 'Save');
-                if (file_exists($file)) {
-                    unlink($file);
+                if (file_exists($file)) unlink($file);
+                if (isset($changedAttributes['name'])) {
+                    $file = Yii::$app->basePath . '/web/' . $path . '/' . $changedAttributes['name'] . '.' . $this->file->extension;
+                    if (file_exists($file)) unlink($file);
                 }
             }
         }

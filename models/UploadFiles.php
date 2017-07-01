@@ -95,7 +95,7 @@ class UploadFiles extends Model
                     if (empty($dub)) {
                         $image = new Image();
                         $image->file_id = $f->id;
-                        $image->name = \yii\helpers\StringHelper::basename($file->baseName, '.' . $f->extension);
+                        $image->name = str_replace('_', '-', $file->baseName);
                         $img = \yii\imagine\Image::getImagine()->open($this->path . '/' .$f->path . '/' . $f->hash . '.' . $f->extension);
                         $image->width = $img->getSize()->getWidth();
                         $image->height = $img->getSize()->getHeight();
