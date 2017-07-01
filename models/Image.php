@@ -209,9 +209,8 @@ class Image extends ActiveRecord
 
         FileHelper::createDirectory($newPath);
 
-        $jpeg_quality = isset($thumb['jpeg_quality']) ? $thumb['jpeg_quality'] : $param['jpeg_quality'];
-
-        if ($img->save($newFile, ['jpeg_quality' => $jpeg_quality])) {
+        if ($img->save($newFile, ['jpeg_quality' => 100])) {
+            exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
             return $newFile;
         } else {
             return false;
