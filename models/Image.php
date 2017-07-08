@@ -161,6 +161,7 @@ class Image extends ActiveRecord
         $img = \yii\imagine\Image::getImagine()->open($originalFile);
 
         if (@$param['method'] == 'crop') {
+            // TODO: Do not increase the size if  $param['width'] > $model->width
             $k1 = $param['width']/$model->width;
             $k2 = $param['height']/$model->height;
             $k = $k1 > $k2 ? $k1 : $k2;
