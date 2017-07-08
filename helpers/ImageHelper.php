@@ -32,6 +32,10 @@ class ImageHelper
     {
         $param = Yii::$app->params['image'];
 
+        if (empty($param['size'][$size])) {
+            return false;
+        }
+
         $thumb = $param['size'][$size];
 
         $dir = isset($thumb['dir']) ? $thumb['dir'] : $size;
