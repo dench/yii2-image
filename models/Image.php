@@ -172,6 +172,16 @@ class Image extends ActiveRecord
             $width = $param['width'];
             $height = $param['height'];
         } else if (@$param['method'] == 'fill') {
+            if ($param['width'] > $model->width && $param['height'] > $model->height) {
+                $p = $param['width']/$param['height'];
+                if ($model->width >= $model->height) {
+                    $param['width'] = $model->width;
+                    $param['height'] = $param['width']/$p;
+                } else {
+                    $param['height'] = $model->height;
+                    $param['width'] = $param['height']/$p;
+                }
+            }
             $k1 = $param['width']/$model->width;
             $k2 = $param['height']/$model->height;
             $k = $k1 < $k2 ? $k1 : $k2;
@@ -197,12 +207,21 @@ class Image extends ActiveRecord
 
         $wm = $param['watermark'];
         if ($wm['enabled']) {
+            // TODO: watermark more than image
             $watermark = \yii\imagine\Image::getImagine()->open($wm['file']);
             $wSize = $watermark->getSize();
+            $wSizeW = $wSize->getWidth();
+            $wSizeH = $wSize->getHeight();
+            $wSizeP = $wSizeW/$wSizeH;
+            if (!empty($wm['width'])) {
+                $wSizeW = $wm['width'];
+                $wSizeH = $wm['width']/$wSizeP;
+                $watermark->resize(new Box($wSizeW, $wSizeH));
+            }
             if ($wm['absolute']) {
-                $bottomRight = new Point($width - $wSize->getWidth() - $wm['x'], $height - $wSize->getHeight() - $wm['y']);
+                $bottomRight = new Point($width - $wSizeW - $wm['x'], $height - $wSizeH - $wm['y']);
             } else {
-                $bottomRight = new Point($width/(100/$wm['x']) - $wSize->getWidth()/2, $height/(100/$wm['y']) - $wSize->getHeight()/2);
+                $bottomRight = new Point($width/(100/$wm['x']) - $wSizeW/2, $height/(100/$wm['y']) - $wSizeH/2);
             }
             $img->paste($watermark, $bottomRight);
         }
