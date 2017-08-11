@@ -12,6 +12,8 @@ class m170310_103803_create_file_table extends Migration
      */
     public function up()
     {
+        $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+
         $this->createTable('file', [
             'id' => $this->primaryKey(),
             'path' => $this->string(10)->notNull(),
@@ -22,7 +24,7 @@ class m170310_103803_create_file_table extends Migration
             'name' => $this->string(),
             'enabled' => $this->boolean()->notNull()->defaultValue(0),
             'created_at' => $this->integer()->notNull(),
-        ]);
+        ], $tableOptions);
     }
     /**
      * @inheritdoc

@@ -12,6 +12,8 @@ class m170310_104136_create_image_table extends Migration
      */
     public function up()
     {
+        $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+
         $this->createTable('image', [
             'id' => $this->primaryKey(),
             'file_id' => $this->integer()->notNull(),
@@ -26,7 +28,7 @@ class m170310_104136_create_image_table extends Migration
             'y' => $this->integer(),
             'zoom' => $this->smallInteger(3),
             'watermark' => $this->boolean(),
-        ]);
+        ], $tableOptions);
 
         $this->addForeignKey('fk-image-file_id', 'image', 'file_id', 'file', 'id', 'CASCADE');
     }
