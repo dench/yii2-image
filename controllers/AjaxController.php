@@ -2,8 +2,10 @@
 
 namespace dench\image\controllers;
 
+use dench\image\models\UploadFile;
 use dench\image\models\UploadFiles;
 use dench\image\widgets\ImageItem;
+use dench\image\widgets\ImagesItem;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -12,7 +14,7 @@ use yii\web\UploadedFile;
 
 class AjaxController extends Controller
 {
-    public function actionFileUpload()
+    public function actionFilesUpload()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -29,7 +31,7 @@ class AjaxController extends Controller
                 $initialPreview = [];
                 $initialPreviewConfig = [];
                 foreach ($model->upload as $key => $upload) {
-                    $initialPreview[] = ImageItem::widget([
+                    $initialPreview[] = ImagesItem::widget([
                         'image' => $upload['image'],
                         'modelInputName' => $modelInputName,
                         'size' => $size,
@@ -39,6 +41,48 @@ class AjaxController extends Controller
                     $initialPreviewConfig[] = [
                         'url' => Url::to(['/image/ajax/file-hide']),
                         'key' => $upload['file']->id,
+                    ];
+                }
+                return [
+                    'initialPreview' => $initialPreview,
+                    'initialPreviewConfig' => $initialPreviewConfig,
+                ];
+            }
+
+            return [
+                'error' => $model->errors[$fileInputName],
+            ];
+        }
+        return [
+            'error' => 'Error!',
+        ];
+    }
+
+    public function actionFileUpload()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isAjax) {
+
+            $modelInputName = Yii::$app->request->post('modelInputName');
+            $fileInputName = Yii::$app->request->post('fileInputName');
+            $size = Yii::$app->request->post('size') ? Yii::$app->request->post('size') : 'small';
+
+            $model = new UploadFile();
+            $model->file = UploadedFile::getInstanceByName($fileInputName);
+
+            if ($model->upload()) {
+                $initialPreview = [];
+                $initialPreviewConfig = [];
+                if (!empty($model->upload)) {
+                    $initialPreview[] = ImageItem::widget([
+                        'image' => $model->upload['image'],
+                        'modelInputName' => $modelInputName,
+                        'size' => $size,
+                    ]);
+                    $initialPreviewConfig[] = [
+                        'url' => Url::to(['/image/ajax/file-hide']),
+                        'key' => $model->upload['file']->id,
                     ];
                 }
                 return [

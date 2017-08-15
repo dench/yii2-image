@@ -10,7 +10,7 @@ namespace dench\image\widgets;
 
 use yii\base\Widget;
 
-class ImageItem extends Widget
+class ImagesItem extends Widget
 {
     /** @var $image dench\image\models\Image */
     public $image;
@@ -19,12 +19,21 @@ class ImageItem extends Widget
 
     public $size;
 
+    public $key;
+
+    public $cover = 0;
+
+    public $enabled = 1;
+
     public function run()
     {
-        return $this->render('imageItem', [
+        return $this->render('imagesItem', [
             'image' => $this->image,
             'modelInputName' => $this->modelInputName,
             'size' => $this->size,
+            'key' => $this->key,
+            'cover' => $this->cover,
+            'enabled' => $this->enabled,
         ]);
     }
 }

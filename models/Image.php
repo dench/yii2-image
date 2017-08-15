@@ -229,8 +229,10 @@ class Image extends ActiveRecord
 
         FileHelper::createDirectory($newPath);
 
-        if ($img->save($newFile, ['jpeg_quality' => 100])) {
-            exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
+        if ($img->save($newFile, ['jpeg_quality' => Yii::$app->params['image']['jpeg_quality']])) {
+            if (Yii::$app->params['image']['convert']) {
+                exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
+            }
             return $newFile;
         } else {
             return false;

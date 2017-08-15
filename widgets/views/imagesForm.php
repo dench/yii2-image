@@ -11,10 +11,11 @@
  * @var string $fileInputName
  * @var string $label
  * @var integer $image_id
+ * @var string $col
  */
 
 use dench\image\assets\ImageUploadAsset;
-use dench\image\widgets\ImageItem;
+use dench\image\widgets\ImagesItem;
 use kartik\file\FileInput;
 use yii\helpers\Url;
 
@@ -30,7 +31,7 @@ ImageUploadAsset::register($this);
     $initialPreview = [];
     $initialPreviewConfig = [];
     foreach ($images as $key => $image) {
-        $initialPreview[] = ImageItem::widget([
+        $initialPreview[] = ImagesItem::widget([
             'image' => $image,
             'modelInputName' => $modelInputName,
             'size' => $size,
@@ -54,6 +55,7 @@ ImageUploadAsset::register($this);
         'pluginOptions' => [
             'initialPreview' => $initialPreview,
             'initialPreviewConfig' => $initialPreviewConfig,
+            'overwriteInitial' => false,
             'fileActionSettings' => [
                 'showZoom' => false,
                 'dragClass' => 'btn btn-xs btn-default',
@@ -64,7 +66,7 @@ ImageUploadAsset::register($this);
                 ],
             ],
             'previewFileType' => 'image',
-            'uploadUrl' => Url::to(['/image/ajax/file-upload']),
+            'uploadUrl' => Url::to(['/image/ajax/files-upload']),
             'uploadExtraData' => [
                 'modelInputName' => $modelInputName,
                 'fileInputName' => $fileInputName,
@@ -76,7 +78,7 @@ ImageUploadAsset::register($this);
             'showBrowse' => true,
             'showCaption' => false,
             'showClose' => false,
-            'showPreview ' => false,
+            'showPreview' => true,
             'dropZoneEnabled' => false,
             'layoutTemplates' => [
                 'modalMain' => '',

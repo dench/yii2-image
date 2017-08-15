@@ -10,7 +10,7 @@ namespace dench\image\widgets;
 
 use yii\base\Widget;
 
-class ImageUpload extends Widget
+class ImagesForm extends Widget
 {
     /** @var $image dench\image\models\Image[] */
     public $images;
@@ -31,7 +31,7 @@ class ImageUpload extends Widget
 
     public function run()
     {
-        return $this->render('imageUpload', [
+        return $this->render('imagesForm', [
             'images' => $this->images,
             'size' => $this->size,
             'fileInputName' => $this->fileInputName,
