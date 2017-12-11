@@ -50,7 +50,7 @@ class AjaxController extends Controller
             }
 
             return [
-                'error' => $model->errors[$fileInputName],
+                'error' => current($model->errors),
             ];
         }
         return [
@@ -92,7 +92,7 @@ class AjaxController extends Controller
             }
 
             return [
-                'error' => $model->errors[$fileInputName],
+                'error' => current($model->error),
             ];
         }
         return [
