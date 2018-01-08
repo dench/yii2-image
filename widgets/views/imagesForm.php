@@ -12,6 +12,7 @@
  * @var string $label
  * @var integer $image_id
  * @var string $col
+ * @var array $imageEnabled
  */
 
 use dench\image\assets\ImageUploadAsset;
@@ -40,7 +41,7 @@ ImageUploadAsset::register($this);
             'enabled' => @$imageEnabled[$image->id],
         ]);
         $initialPreviewConfig[] = [
-            'url' => Url::to(['/image/ajax/file-hide']),
+            'url' => Url::to(['/image/ajax/image-hide']),
             'key' => $image->file_id,
         ];
     }
@@ -66,7 +67,7 @@ ImageUploadAsset::register($this);
                 ],
             ],
             'previewFileType' => 'image',
-            'uploadUrl' => Url::to(['/image/ajax/files-upload']),
+            'uploadUrl' => Url::to(['/image/ajax/images-upload']),
             'uploadExtraData' => [
                 'modelInputName' => $modelInputName,
                 'fileInputName' => $fileInputName,
@@ -84,7 +85,7 @@ ImageUploadAsset::register($this);
                 'modalMain' => '',
                 'modal' => '',
                 'footer' => '<div class="file-thumbnail-footer">{actions}</div>',
-                'actions' => '{delete}<button class="file-move btn btn-xs btn-default"><i class="glyphicon glyphicon-move"></i></button>',
+                'actions' => '{delete}<button type="button" class="file-move btn btn-xs btn-default"><i class="glyphicon glyphicon-move"></i></button>',
                 'progress' => '',
             ],
             'previewTemplates' => [

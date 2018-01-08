@@ -111,7 +111,7 @@ class File extends ActiveRecord
             'extension' => $this->extension,
         ]);
 
-        $file = Yii::$app->params['filePath'] . '/' . $this->path . '/' . $this->id . '.' . $this->extension;
+        $file = Yii::$app->params['file']['path'] . '/' . $this->path . '/' . $this->hash . '.' . $this->extension;
 
         if (empty($dub) && file_exists($file)) {
             unlink($file);

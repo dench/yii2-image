@@ -10,12 +10,10 @@ namespace dench\image\widgets;
 
 use yii\base\Widget;
 
-class ImagesForm extends Widget
+class FilesForm extends Widget
 {
-    /** @var $images dench\image\models\Image[] */
-    public $images;
-
-    public $size = 'cover';
+    /** @var $files dench\image\models\File[] */
+    public $files;
 
     public $fileInputName = 'files';
 
@@ -23,23 +21,22 @@ class ImagesForm extends Widget
 
     public $col = 'col-sm-4';
 
-    public $label = 'Images';
+    public $label = 'Files';
 
-    public $image_id = null;
+    public $fileEnabled = [];
 
-    public $imageEnabled = [];
+    public $fileName = [];
 
     public function run()
     {
-        return $this->render('imagesForm', [
-            'images' => $this->images,
-            'size' => $this->size,
+        return $this->render('filesForm', [
+            'files' => $this->files,
             'fileInputName' => $this->fileInputName,
             'modelInputName' => $this->modelInputName,
             'col' => $this->col,
             'label' => $this->label,
-            'image_id' => $this->image_id,
-            'imageEnabled' => $this->imageEnabled,
+            'fileEnabled' => $this->fileEnabled,
+            'fileName' => $this->fileName,
         ]);
     }
 }

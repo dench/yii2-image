@@ -8,7 +8,9 @@
 
 namespace dench\image\controllers;
 
+use dench\image\models\File;
 use dench\image\models\Image;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -25,7 +27,7 @@ class DefaultController extends Controller
 
         if ($file = Image::resize($model, $size)) {
             header('Content-Type: ' . $model->file->type);
-            print file_get_contents($file);
+            readfile($file);
         } else {
             throw new NotFoundHttpException('Image not found!');
         }
@@ -48,4 +50,25 @@ class DefaultController extends Controller
         }
     }
 
+    public function actionFile($name, $extension)
+    {
+        $model = File::findOne([
+            'name' => $name,
+            'extension' => $extension,
+            'enabled' => true,
+        ]);
+
+        if ($model !== null) {
+            $file = Yii::$app->params['file']['path'] . '/' . $model->path . '/' . $model->hash . '.' . $model->extension;
+            if (file_exists($file)) {
+                header('Content-Type: ' . $model->type);
+                readfile($file);
+            } else {
+                throw new NotFoundHttpException('The requested file does not exist.');
+            }
+        } else {
+            throw new NotFoundHttpException('The requested file does not exist.');
+        }
+        die();
+    }
 }

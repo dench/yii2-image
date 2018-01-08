@@ -5,18 +5,20 @@
  * Date: 25.03.17
  * Time: 20:44
  *
- * @var $image dench\image\models\Image
- * @var string $size
+ * @var $files dench\image\models\File[]
  * @var string $modelInputName
  * @var string $fileInputName
  * @var string $label
  * @var string $col
+ * @var array $fileEnabled
+ * @var array $fileName
  */
 
 use dench\image\assets\ImageUploadAsset;
-use dench\image\widgets\ImageItem;
+use dench\image\widgets\FilesItem;
 use kartik\file\FileInput;
 use yii\helpers\Url;
+
 
 ImageUploadAsset::register($this);
 ?>
@@ -28,42 +30,44 @@ ImageUploadAsset::register($this);
     <?php
     $initialPreview = [];
     $initialPreviewConfig = [];
-    if (!empty($image)) {
-        $initialPreview[] = ImageItem::widget([
-            'image' => $image,
+    foreach ($files as $key => $file) {
+        $initialPreview[] = FilesItem::widget([
+            'file' => $file,
             'modelInputName' => $modelInputName,
-            'size' => $size,
+            'key' => $file->id,
+            'enabled' => @$fileEnabled[$file->id],
+            'name' => ($fileName[$file->id]) ? $fileName[$file->id] : $file->name,
         ]);
         $initialPreviewConfig[] = [
-            'url' => Url::to(['/image/ajax/image-hide']),
-            'key' => $image->file_id,
+            'url' => Url::to(['/image/ajax/file-hide']),
+            'key' => $file->id,
         ];
     }
     echo FileInput::widget([
         'id' => $fileInputName,
-        'name' => $fileInputName,
+        'name' => $fileInputName . '[]',
         'options' => [
-            'multiple' => false,
-            'accept' => 'image/jpeg'
+            'multiple' => true,
         ],
         'language' => Yii::$app->language,
         'pluginOptions' => [
             'initialPreview' => $initialPreview,
             'initialPreviewConfig' => $initialPreviewConfig,
-            'overwriteInitial' => true,
+            'overwriteInitial' => false,
             'fileActionSettings' => [
                 'showZoom' => false,
                 'dragClass' => 'btn btn-xs btn-default',
                 'dragSettings' => [
-                    'sort' => false,
+                    'sort' => true,
+                    'draggable' => '.file-sortable',
+                    'handle' => '.file-move',
                 ],
             ],
-            'previewFileType' => 'image',
-            'uploadUrl' => Url::to(['/image/ajax/image-upload']),
+            'previewFileType' => 'file',
+            'uploadUrl' => Url::to(['/image/ajax/files-upload']),
             'uploadExtraData' => [
                 'modelInputName' => $modelInputName,
                 'fileInputName' => $fileInputName,
-                'size' => $size,
             ],
             'uploadAsync' => false,
             'showUpload' => false,
@@ -77,25 +81,16 @@ ImageUploadAsset::register($this);
                 'modalMain' => '',
                 'modal' => '',
                 'footer' => '<div class="file-thumbnail-footer">{actions}</div>',
-                'actions' => '{delete}',
+                'actions' => '{delete}<button type="button" class="file-move btn btn-xs btn-default"><i class="glyphicon glyphicon-move"></i></button>',
                 'progress' => '',
             ],
             'previewTemplates' => [
                 'generic' => '
-<div class="file-preview-frame kv-preview-thumb ' . $col . '" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
+<div class="file-preview-frame kv-preview-thumb drag-handle-init file-sortable ' . $col . '" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
 <div class="kv-file-content">
     {content}
 </div>
 {footer}
-</div>',
-                'image' => '
-<div class="' . $col . '">
-<div class="file-preview-frame kv-preview-thumb" id="{previewId}" data-fileindex="{fileindex}" data-template="{template}">
-<div class="kv-file-content">
-    <img src="{data}" class="kv-preview-data file-preview-image" title="{caption}" alt="{caption}" width="100%">
-</div>
-{footer}
-</div>
 </div>',
             ],
         ],

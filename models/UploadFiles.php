@@ -23,7 +23,8 @@ class UploadFiles extends Model
 
     public $upload;
 
-    private $extensions;
+    public $extensions;
+
     private $maxSize;
     private $maxFiles;
     private $path;
@@ -34,7 +35,8 @@ class UploadFiles extends Model
 
         $param = Yii::$app->params['file'];
 
-        $this->extensions = $param['extensions'];
+        $this->extensions = ($this->extensions) ? $this->extensions : $param['extensions'];
+
         $this->maxSize = $param['maxSize'];
         $this->maxFiles = $param['maxFiles'];
         $this->path = $param['path'];
@@ -79,6 +81,7 @@ class UploadFiles extends Model
                     $f->size = $size;
                     $f->extension = $extension;
                     $f->path = $path;
+                    $f->name = str_replace('_', '-', $file->baseName);
                     if ($f->save()) {
                         $file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
                     }
