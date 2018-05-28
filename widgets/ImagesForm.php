@@ -17,7 +17,7 @@ class ImagesForm extends Widget
 
     public $size = 'cover';
 
-    public $fileInputName = 'files';
+    public $fileInputName = 'images';
 
     public $modelInputName = 'Page';
 

@@ -23,7 +23,7 @@ use yii\helpers\Url;
 ImageUploadAsset::register($this);
 ?>
 
-<div class="form-group field-page-image">
+<div class="form-group field-page-file">
     <?php if ($label) : ?>
         <label class="control-label" for="page-text"><?= $label ?></label>
     <?php endif; ?>
