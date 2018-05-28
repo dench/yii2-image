@@ -52,8 +52,8 @@ class File extends ActiveRecord
         return [
             [['path', 'hash', 'extension', 'type', 'size'], 'required'],
             [['size'], 'integer'],
-            [['name'], 'string', 'max' => 255],
-            [['hash', 'type'], 'string', 'max' => 32],
+            [['name', 'type'], 'string', 'max' => 255],
+            [['hash'], 'string', 'max' => 32],
             [['extension', 'path'], 'string', 'max' => 10],
             [['enabled'], 'boolean'],
             [['enabled'], 'default', 'value' => true],
