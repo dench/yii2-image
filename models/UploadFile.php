@@ -25,6 +25,8 @@ class UploadFile extends Model
 
     public $extensions;
 
+    public $fromUrl = false;
+
     private $maxSize;
     private $path;
 
@@ -42,9 +44,13 @@ class UploadFile extends Model
 
     public function rules()
     {
-        return [
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => $this->extensions, 'maxSize' => $this->maxSize],
-        ];
+        if ($this->fromUrl) {
+            $rules = [['file'], 'igogo5yo\uploadfromurl\FileFromUrlValidator', 'extensions' => $this->extensions, 'maxSize' => $this->maxSize];
+        } else {
+            $rules = [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => $this->extensions, 'maxSize' => $this->maxSize];
+        }
+
+        return [$rules];
     }
 
     public function upload()
@@ -61,7 +67,12 @@ class UploadFile extends Model
             $type = $this->file->type;
             $size = $this->file->size;
             $extension = $this->file->extension;
-            $hash = md5_file($this->file->tempName);
+            if ($this->fromUrl) {
+                $fileContents = file_get_contents($this->file->url);
+                $hash = md5($fileContents);
+            } else {
+                $hash = md5_file($this->file->tempName);
+            }
 
             $dub = File::findOne([
                 'hash' => $hash,
@@ -77,6 +88,13 @@ class UploadFile extends Model
                 $f->size = $size;
                 $f->extension = $extension;
                 $f->path = $path;
+                if ($this->fromUrl) {
+                    preg_match('/.*\/(.+?)\..+?$/', $this->file->url, $out);
+                    $baseName = @$out[1];
+                } else {
+                    $baseName = $this->file->baseName;
+                }
+                $f->name = str_replace('_', '-', $baseName);
                 if ($f->save()) {
                     $this->file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
                 }
@@ -93,7 +111,7 @@ class UploadFile extends Model
                 if (empty($dub)) {
                     $image = new Image();
                     $image->file_id = $f->id;
-                    $image->name = str_replace('_', '-', $this->file->baseName);
+                    $image->name = $f->name;
                     $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
                     $image->width = $img->getSize()->getWidth();
                     $image->height = $img->getSize()->getHeight();
