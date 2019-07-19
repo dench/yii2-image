@@ -214,10 +214,14 @@ class Image extends ActiveRecord
             $wSizeW = $wSize->getWidth();
             $wSizeH = $wSize->getHeight();
             $wSizeP = $wSizeW/$wSizeH;
-            if (!empty($wm['width'])) {
-                $wSizeW = $wm['width'];
-                $wSizeH = $wm['width']/$wSizeP;
-                $watermark->resize(new Box($wSizeW, $wSizeH));
+            if ($wSizeW > $width) {
+                $wSizeW = $width;
+                $wSizeH = $width/$wSizeP;
+                $watermark->resize(new Box($width, $height));
+            } elseif (!empty($wm['width'])) {
+                $wSizeW = $width;
+                $wSizeH = $width/$wSizeP;
+                $watermark->resize(new Box($width, $height));
             }
             if ($wm['absolute']) {
                 $bottomRight = new Point($width - $wSizeW - $wm['x'], $height - $wSizeH - $wm['y']);
