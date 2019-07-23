@@ -218,6 +218,10 @@ class Image extends ActiveRecord
                 $wSizeW = $width;
                 $wSizeH = $width/$wSizeP;
                 $watermark->resize(new Box($width, $height));
+            } elseif ($wSizeH > $height) {
+                $wSizeW = $height/$wSizeP;
+                $wSizeH = $height;
+                $watermark->resize(new Box($width, $height));
             } elseif (!empty($wm['width'])) {
                 $wSizeW = $width;
                 $wSizeH = $width/$wSizeP;
