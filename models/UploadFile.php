@@ -39,7 +39,7 @@ class UploadFile extends Model
         $this->extensions = ($this->extensions) ? $this->extensions : $param['extensions'];
 
         $this->maxSize = $param['maxSize'];
-        $this->path = $param['path'];
+        $this->path = Yii::getAlias($param['path']);
     }
 
     public function rules()
