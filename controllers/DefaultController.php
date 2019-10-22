@@ -59,7 +59,7 @@ class DefaultController extends Controller
         ]);
 
         if ($model !== null) {
-            $file = Yii::$app->params['file']['path'] . '/' . $model->path . '/' . $model->hash . '.' . $model->extension;
+            $file = Yii::getAlias(Yii::$app->params['file']['path']) . '/' . $model->path . '/' . $model->hash . '.' . $model->extension;
             if (file_exists($file)) {
                 header('Content-Type: ' . $model->type);
                 readfile($file);
