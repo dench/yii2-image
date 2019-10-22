@@ -37,7 +37,7 @@ class Image extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'image';
+        return '{{%image}}';
     }
 
     /**
