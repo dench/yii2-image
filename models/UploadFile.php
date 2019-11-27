@@ -53,6 +53,13 @@ class UploadFile extends Model
         return [$rules];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'file' => Yii::t('app', 'Загрузить файл'),
+        ];
+    }
+
     public function upload()
     {
         $this->upload = [];
@@ -74,51 +81,36 @@ class UploadFile extends Model
                 $hash = md5_file($this->file->tempName);
             }
 
-            $dub = File::findOne([
-                'hash' => $hash,
-                'size' => $size,
-                'type' => $type,
-                'extension' => $extension,
-            ]);
+            $dub = File::findDuplicate($hash, $size);
 
-            if (empty($dub)) {
-                $f = new File();
-                $f->hash = $hash;
-                $f->type = $type;
-                $f->size = $size;
-                $f->extension = $extension;
-                $f->path = $path;
-                if ($this->fromUrl) {
-                    preg_match('/.*\/(.+?)\..+?$/', $this->file->url, $out);
-                    $baseName = @$out[1];
-                } else {
-                    $baseName = $this->file->baseName;
-                }
-                $f->name = str_replace('_', '-', $baseName);
-                if ($f->save()) {
-                    $this->file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
-                }
+            $f = new File();
+            $f->hash = $hash;
+            $f->type = $type;
+            $f->size = $size;
+            $f->extension = $dub ? $dub->extension : $extension;
+            $f->path = $dub ? $dub->path : $path;
+            if ($this->fromUrl) {
+                preg_match('/.*\/(.+?)\..+?$/', $this->file->url, $out);
+                $baseName = @$out[1];
             } else {
-                $f = $dub;
+                $baseName = $this->file->baseName;
+            }
+            $f->name = str_replace('_', '-', $baseName);
+            $f->user_id = Yii::$app->user->getId();
+            if ($f->save() && empty($dub)) {
+                $this->file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
             }
 
             $this->upload['file'] = $f;
 
             if (preg_match('#^image/#', $f->type)) {
-
-                $dub = Image::findOne(['file_id' => $f->id]);
-
-                if (empty($dub)) {
-                    $image = new Image();
-                    $image->file_id = $f->id;
-                    $image->name = $f->name;
-                    $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
-                    $image->width = $img->getSize()->getWidth();
-                    $image->height = $img->getSize()->getHeight();
-                    $image->save();
-                } else {
-                    $image = $dub;
-                }
+                $image = new Image();
+                $image->file_id = $f->id;
+                $image->name = $f->name;
+                $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
+                $image->width = $img->getSize()->getWidth();
+                $image->height = $img->getSize()->getHeight();
+                $image->save();
 
                 $this->upload['image'] = $image;
             }

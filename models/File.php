@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  * @property string $name
  * @property boolean $enabled
  * @property integer $created_at
+ * @property integer $user_id
  *
  * @property Image[] $images
  */
@@ -38,7 +39,7 @@ class File extends ActiveRecord
     {
         return [
             [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
@@ -51,7 +52,7 @@ class File extends ActiveRecord
     {
         return [
             [['path', 'hash', 'extension', 'type', 'size'], 'required'],
-            [['size'], 'integer'],
+            [['size', 'user_id'], 'integer'],
             [['name', 'type'], 'string', 'max' => 255],
             [['hash'], 'string', 'max' => 32],
             [['extension', 'path'], 'string', 'max' => 10],
@@ -75,6 +76,7 @@ class File extends ActiveRecord
             'name' => Yii::t('app', 'Name'),
             'enabled' => Yii::t('app', 'Enabled'),
             'created_at' => Yii::t('app', 'Created'),
+            'user_id' => Yii::t('app', 'User'),
         ];
     }
 
@@ -83,7 +85,7 @@ class File extends ActiveRecord
      */
     public function getImages()
     {
-        return $this->hasMany(Image::className(), ['file_id' => 'id']);
+        return $this->hasMany(Image::class, ['file_id' => 'id']);
     }
 
     /**
@@ -105,16 +107,46 @@ class File extends ActiveRecord
     {
         parent::afterDelete();
 
-        $dub = File::findOne([
-            'path' => $this->path,
-            'hash' => $this->hash,
-            'extension' => $this->extension,
-        ]);
+        $duplicate = self::findDuplicate($this->hash, $this->size);
 
         $file = Yii::getAlias(Yii::$app->params['file']['path']) . '/' . $this->path . '/' . $this->hash . '.' . $this->extension;
 
-        if (empty($dub) && file_exists($file)) {
+        if (empty($duplicate) && file_exists($file)) {
             unlink($file);
         }
+    }
+
+    /**
+     * @param $hash
+     * @param null $size
+     * @return File[]|null
+     */
+    public static function findDuplicates($hash, $size = null)
+    {
+        $return = null;
+
+        if ($temp = self::find()->where(['hash' => $hash])->all()) {
+            foreach ($temp as $t) {
+                if (!$size || $t->size === $size) {
+                    $return[] = $t;
+                }
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param $hash
+     * @param null $size
+     * @return File|null
+     */
+    public static function findDuplicate($hash, $size = null)
+    {
+        if ($ds = self::findDuplicates($hash, $size)) {
+            return current($ds);
+        }
+
+        return null;
     }
 }

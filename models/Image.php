@@ -47,7 +47,7 @@ class Image extends ActiveRecord
     {
         return [
             [
-                'class' => SluggableBehavior::className(),
+                'class' => SluggableBehavior::class,
                 'attribute' => 'name',
                 'slugAttribute' => 'name',
                 'ensureUnique' => true,
@@ -65,7 +65,7 @@ class Image extends ActiveRecord
             [['file_id', 'rotate', 'mirror', 'width', 'height', 'x', 'y', 'zoom', 'watermark'], 'integer'],
             [['method'], 'string', 'max' => 10],
             [['name', 'alt'], 'string', 'max' => 255],
-            [['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::className(), 'targetAttribute' => ['file_id' => 'id']],
+            [['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['file_id' => 'id']],
         ];
     }
 
@@ -96,7 +96,7 @@ class Image extends ActiveRecord
      */
     public function getFile()
     {
-        return $this->hasOne(File::className(), ['id' => 'file_id']);
+        return $this->hasOne(File::class, ['id' => 'file_id']);
     }
 
     /**
@@ -138,7 +138,7 @@ class Image extends ActiveRecord
      * @param Image $model
      * @return bool|string
      */
-    public static function resize($model, $size)
+    public static function resize($model, $size, $filename = null)
     {
         if (empty(Yii::$app->params['image']['size'][$size])) {
             return false;
@@ -156,11 +156,15 @@ class Image extends ActiveRecord
 
         $newPath = Yii::getAlias('@webroot') . '/' . ImageHelper::generatePath($size);
 
-        $newFile = $newPath . '/' . $model->name . '.' . $model->file->extension;
+        $filename = $filename ? $filename : $model->name . '.' . $model->file->extension;
+
+        $newFile = $newPath . '/' . $filename;
 
         $img = \yii\imagine\Image::getImagine()->open($originalFile);
 
-        if (@$param['method'] == 'crop') {
+        $method = $model->method ? $model->method : @$param['method'];
+
+        if ($method === 'crop') {
             // TODO: Do not increase the size if  $param['width'] > $model->width
             $k1 = $param['width']/$model->width;
             $k2 = $param['height']/$model->height;
@@ -172,7 +176,7 @@ class Image extends ActiveRecord
             $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
             $width = $param['width'];
             $height = $param['height'];
-        } else if (@$param['method'] == 'fill') {
+        } else if ($method === 'fill') {
             if ($param['width'] > $model->width && $param['height'] > $model->height) {
                 $p = $param['width']/$param['height'];
                 if ($model->width >= $model->height) {
