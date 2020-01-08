@@ -35,7 +35,7 @@ class UploadFiles extends Model
 
         $param = Yii::$app->params['file'];
 
-        $this->extensions = ($this->extensions) ? $this->extensions : $param['extensions'];
+        $this->extensions = $this->extensions ?? $param['extensions'];
 
         $this->maxSize = $param['maxSize'];
         $this->maxFiles = $param['maxFiles'];
@@ -82,7 +82,7 @@ class UploadFiles extends Model
                 $f->size = $size;
                 $f->extension = $dub ? $dub->extension : $extension;
                 $f->path = $dub ? $dub->path : $path;
-                $f->name = str_replace('_', '-', $file->baseName);
+                $f->name = $file->baseName;
                 $f->user_id = Yii::$app->user->getId();
                 if ($f->save() && empty($dub)) {
                     $file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
@@ -93,7 +93,7 @@ class UploadFiles extends Model
                 if (preg_match('#^image/#', $f->type)) {
                     $image = new Image();
                     $image->file_id = $f->id;
-                    $image->name = str_replace('_', '-', $file->baseName);
+                    $image->name = $file->baseName;
                     $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
                     $image->width = $img->getSize()->getWidth();
                     $image->height = $img->getSize()->getHeight();
@@ -104,8 +104,8 @@ class UploadFiles extends Model
             }
 
             return $this->upload;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }

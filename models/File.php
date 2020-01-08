@@ -5,6 +5,7 @@ namespace dench\image\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Inflector;
 
 /**
  * This is the model class for table "file".
@@ -20,7 +21,13 @@ use yii\db\ActiveRecord;
  * @property integer $created_at
  * @property integer $user_id
  *
+ * @property string $downloadKey
+ * @property string $downloadName
+ * @property string $fullDownloadName
+ * @property string $fullPath
+ *
  * @property Image[] $images
+ * @property Image $image
  */
 class File extends ActiveRecord
 {
@@ -81,11 +88,19 @@ class File extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQuery|Image[]
      */
     public function getImages()
     {
         return $this->hasMany(Image::class, ['file_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|Image
+     */
+    public function getImage()
+    {
+        return $this->hasOne(Image::class, ['file_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
 
     /**
@@ -111,7 +126,7 @@ class File extends ActiveRecord
 
         $file = Yii::getAlias(Yii::$app->params['file']['path']) . '/' . $this->path . '/' . $this->hash . '.' . $this->extension;
 
-        if (empty($duplicate) && file_exists($file)) {
+        if ($duplicate === null && file_exists($file)) {
             unlink($file);
         }
     }
@@ -148,5 +163,30 @@ class File extends ActiveRecord
         }
 
         return null;
+    }
+
+    public function isImage(): bool
+    {
+        return 0 === strpos($this->type, 'image');
+    }
+
+    public function getDownloadKey(): string
+    {
+        return substr(md5($this->id . Yii::$app->params['file']['downloadSecurityKey']), 10, 5);
+    }
+
+    public function getDownloadName(): string
+    {
+        return Inflector::slug($this->name);
+    }
+
+    public function getFullDownloadName(): string
+    {
+        return $this->id . '-' . $this->downloadName . '.' . $this->extension;
+    }
+
+    public function getFullPath(): string
+    {
+        return Yii::$app->params['file']['path'] . '/' . $this->path . '/' . $this->hash . '.' . $this->extension;
     }
 }

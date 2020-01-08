@@ -1,2 +1,29 @@
-.file-preview{padding:0;margin:-3px 0 5px 0;border:none}.file-drop-zone{margin:0}.file-drop-zone.clickable:hover{border:1px solid #3c8dbc}.file-preview-frame{border:none;display:block;height:auto;padding-bottom:15px;padding-top:15px}.file-preview-frame .kv-file-content{box-shadow:1px 1px 5px 0 #bbb}.file-preview-frame img{border-radius:2px}.file-thumbnail-footer{position:absolute;top:20px;right:20px}.file-initial-thumbs,.file-live-thumbs{margin:0 -3px}.kv-upload-progress{clear:both}
+.file-preview {
+  padding: 0;
+  margin: -3px 0 5px 0;
+  border: none; }
+.file-drop-zone {
+  margin: 0; }
+  .file-drop-zone.clickable:hover {
+    border: 1px solid #3c8dbc; }
+.file-preview-frame {
+  border: none;
+  display: block;
+  height: auto;
+  padding-bottom: 15px;
+  padding-top: 15px; }
+  .file-preview-frame .kv-file-content {
+    box-shadow: 1px 1px 5px 0 #bbb; }
+  .file-preview-frame img {
+    border-radius: 2px; }
+.file-thumbnail-footer {
+  position: absolute;
+  top: 20px;
+  right: 20px; }
+.file-initial-thumbs, .file-live-thumbs {
+  margin: 0 -3px; }
+
+.kv-upload-progress {
+  clear: both; }
+
 /*# sourceMappingURL=image-upload.css.map */

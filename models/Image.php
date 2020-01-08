@@ -4,6 +4,7 @@ namespace dench\image\models;
 
 use dench\image\helpers\ImageHelper;
 use Imagine\Image\Box;
+use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
 use Yii;
 use yii\behaviors\SluggableBehavior;
@@ -164,6 +165,9 @@ class Image extends ActiveRecord
 
         $method = $model->method ? $model->method : @$param['method'];
 
+        $palette = new RGB();
+        $color = $palette->color(\yii\imagine\Image::$thumbnailBackgroundColor, \yii\imagine\Image::$thumbnailBackgroundAlpha);
+
         if ($method === 'crop') {
             // TODO: Do not increase the size if  $param['width'] > $model->width
             $k1 = $param['width']/$model->width;
@@ -193,7 +197,7 @@ class Image extends ActiveRecord
             $width = round($model->width*$k);
             $height = round($model->height*$k);
             $img->resize(new Box($width, $height));
-            $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']));
+            $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
             $x = round(($param['width']-$width)/2);
             $y = round(($param['height']-$height)/2);
             $img_new->paste($img, new Point($x, $y));
@@ -242,8 +246,8 @@ class Image extends ActiveRecord
                 exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
             }
             return $newFile;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }
