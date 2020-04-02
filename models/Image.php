@@ -189,9 +189,9 @@ class Image extends ActiveRecord
             $x = -round(($param['width'] - $width) / 2);
             $y = -round(($param['height'] - $height) / 2);
 
-            $img->resize(new Box($width, $height));
+            $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
             $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
-            $img_new->paste($img, new Point($x, $y));
+            $img_new->paste($img, new Point(0, 0));
             $img = $img_new;
             $width = $param['width'];
             $height = $param['height'];
