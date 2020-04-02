@@ -168,55 +168,56 @@ class Image extends ActiveRecord
         $palette = new RGB();
         $color = $palette->color(\yii\imagine\Image::$thumbnailBackgroundColor, \yii\imagine\Image::$thumbnailBackgroundAlpha);
 
+        if ($param['width'] > $model->width && $param['height'] > $model->height) {
+            $p = $param['width'] / $param['height'];
+            if ($model->width >= $model->height) {
+                $param['width'] = $model->width;
+                $param['height'] = $param['width'] / $p;
+            } else {
+                $param['height'] = $model->height;
+                $param['width'] = $param['height'] / $p;
+            }
+        }
+
+        $k1 = $param['width'] / $model->width;
+        $k2 = $param['height'] / $model->height;
+
         if ($method === 'crop') {
-            // TODO: Do not increase the size if  $param['width'] > $model->width
-            $k1 = $param['width']/$model->width;
-            $k2 = $param['height']/$model->height;
             $k = $k1 > $k2 ? $k1 : $k2;
-            $width = round($model->width*$k);
-            $height = round($model->height*$k);
-            $x = -round(($param['width']-$width)/2);
-            $y = -round(($param['height']-$height)/2);
-            $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
+            $width = round($model->width * $k);
+            $height = round($model->height * $k);
+            $x = -round(($param['width'] - $width) / 2);
+            $y = -round(($param['height'] - $height) / 2);
+
+            $img->resize(new Box($width, $height));
+            $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
+            $img_new->paste($img, new Point($x, $y));
+            $img = $img_new;
             $width = $param['width'];
             $height = $param['height'];
         } else if ($method === 'fill') {
-            if ($param['width'] > $model->width && $param['height'] > $model->height) {
-                $p = $param['width']/$param['height'];
-                if ($model->width >= $model->height) {
-                    $param['width'] = $model->width;
-                    $param['height'] = $param['width']/$p;
-                } else {
-                    $param['height'] = $model->height;
-                    $param['width'] = $param['height']/$p;
-                }
-            }
-            $k1 = $param['width']/$model->width;
-            $k2 = $param['height']/$model->height;
             $k = $k1 < $k2 ? $k1 : $k2;
-            $width = round($model->width*$k);
-            $height = round($model->height*$k);
+            $width = round($model->width * $k);
+            $height = round($model->height * $k);
+            $x = round(($param['width'] - $width) / 2);
+            $y = round(($param['height'] - $height) / 2);
+
             $img->resize(new Box($width, $height));
             $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
-            $x = round(($param['width']-$width)/2);
-            $y = round(($param['height']-$height)/2);
             $img_new->paste($img, new Point($x, $y));
             $img = $img_new;
             $width = $param['width'];
             $height = $param['height'];
         } else {
-            // force clip
-            $k1 = $param['width']/$model->width;
-            $k2 = $param['height']/$model->height;
+            // clip
             $k = $k1 < $k2 ? $k1 : $k2;
-            $width = round($model->width*$k);
-            $height = round($model->height*$k);
+            $width = round($model->width * $k);
+            $height = round($model->height * $k);
             $img->resize(new Box($width, $height));
         }
 
         $wm = $param['watermark'];
         if ($wm['enabled']) {
-            // TODO: watermark more than image
             $watermark = \yii\imagine\Image::getImagine()->open($wm['file']);
             $wSize = $watermark->getSize();
             $wSizeW = $wSize->getWidth();
@@ -232,11 +233,15 @@ class Image extends ActiveRecord
                 $watermark->resize(new Box($wSizeW, $wSizeH));
             }
             if ($wm['absolute']) {
-                $bottomRight = new Point($width - $wSizeW - $wm['x'], $height - $wSizeH - $wm['y']);
+                $w = $width - $wSizeW - $wm['x'];
+                $h = $height - $wSizeH - $wm['y'];
             } else {
-                $bottomRight = new Point($width/(100/$wm['x']) - $wSizeW/2, $height/(100/$wm['y']) - $wSizeH/2);
+                $w = $width / (100 / $wm['x']) - ($wSizeW / 2);
+                $h = $height / (100 / $wm['y']) - ($wSizeH / 2);
             }
-            $img->paste($watermark, $bottomRight);
+            if ($w > 0 && $h > 0) {
+                $img->paste($watermark, new Point($w, $h));
+            }
         }
 
         FileHelper::createDirectory($newPath);

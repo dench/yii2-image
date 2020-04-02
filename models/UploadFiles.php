@@ -84,7 +84,7 @@ class UploadFiles extends Model
                 $f->path = $dub ? $dub->path : $path;
                 $f->name = $file->baseName;
                 $f->user_id = Yii::$app->user->getId();
-                if ($f->save() && empty($dub)) {
+                if ($f->save() && $dub === null) {
                     $file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
                 }
 
