@@ -56,6 +56,13 @@ class UploadFiles extends Model
         ];
     }
 
+    public function attributeHints()
+    {
+        return [
+            'files' => implode(', ', $this->extensions),
+        ];
+    }
+
     public function upload()
     {
         $this->upload = [];
