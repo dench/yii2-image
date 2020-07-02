@@ -100,7 +100,7 @@ class UploadFiles extends Model
                 if (preg_match('#^image/#', $f->type)) {
                     $image = new Image();
                     $image->file_id = $f->id;
-                    $image->name = $file->baseName;
+                    $image->name = null;
                     $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
                     $image->width = $img->getSize()->getWidth();
                     $image->height = $img->getSize()->getHeight();

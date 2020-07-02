@@ -47,11 +47,12 @@ class Image extends ActiveRecord
     public function behaviors()
     {
         return [
-            [
+            'slug' => [
                 'class' => SluggableBehavior::class,
                 'attribute' => 'name',
                 'slugAttribute' => 'name',
                 'ensureUnique' => true,
+                'skipOnEmpty' => true,
             ],
         ];
     }
@@ -62,7 +63,7 @@ class Image extends ActiveRecord
     public function rules()
     {
         return [
-            [['file_id', 'name', 'width', 'height'], 'required'],
+            [['file_id', 'width', 'height'], 'required'],
             [['file_id', 'rotate', 'mirror', 'width', 'height', 'x', 'y', 'zoom', 'watermark'], 'integer'],
             [['method'], 'string', 'max' => 10],
             [['name', 'alt'], 'string', 'max' => 255],
@@ -139,13 +140,17 @@ class Image extends ActiveRecord
      * @param Image $model
      * @return bool|string
      */
-    public static function resize($model, $size, $filename = null)
+    public static function resize($model, $size, $filename = null, $path = null)
     {
         if (empty(Yii::$app->params['image']['size'][$size])) {
             return false;
         }
 
         $originalFile = Yii::getAlias(Yii::$app->params['file']['path']) . '/' . $model->file->path . '/' . $model->file->hash . '.' . $model->file->extension;
+
+        if (!file_exists($originalFile)) {
+            return false;
+        }
 
         $param = ArrayHelper::merge(Yii::$app->params['image'], Yii::$app->params['image']['size'][$size]);
 
@@ -155,7 +160,7 @@ class Image extends ActiveRecord
 
         $param['watermark']['file'] = Yii::getAlias($param['watermark']['file']);
 
-        $newPath = Yii::getAlias('@webroot') . '/' . ImageHelper::generatePath($size);
+        $newPath = $path ? $path : Yii::getAlias('@webroot') . '/' . ImageHelper::generatePath($size);
 
         $filename = $filename ? $filename : $model->name . '.' . $model->file->extension;
 
@@ -214,6 +219,9 @@ class Image extends ActiveRecord
             $width = round($model->width * $k);
             $height = round($model->height * $k);
             $img->resize(new Box($width, $height));
+            $img_new = \yii\imagine\Image::getImagine()->create(new Box($width, $height), $color);
+            $img_new->paste($img, new Point(0, 0));
+            $img = $img_new;
         }
 
         $wm = $param['watermark'];
