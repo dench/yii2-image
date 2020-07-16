@@ -170,6 +170,15 @@ class Image extends ActiveRecord
 
         $method = $model->method ? $model->method : @$param['method'];
 
+        if (in_array($model->rotate, [90, 270])) {
+            $img->rotate($model->rotate);
+            $temp = $model->width;
+            $model->width = $model->height;
+            $model->height = $temp;
+        } elseif ($model->rotate === 180) {
+            $img->rotate($model->rotate);
+        }
+
         $palette = new RGB();
         $color = $palette->color(\yii\imagine\Image::$thumbnailBackgroundColor, \yii\imagine\Image::$thumbnailBackgroundAlpha);
 
