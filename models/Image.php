@@ -110,6 +110,7 @@ class Image extends ActiveRecord
 
         foreach (Yii::$app->params['image']['size'] as $size => $thumb) {
             $path = ImageHelper::generatePath($size);
+            // TODO: возможно не удаляются фото с альбомов
             $file = Yii::$app->basePath . '/web/' . $path . '/' . $this->name . '.' . $this->file->extension;
             if (file_exists($file)) {
                 unlink($file);
@@ -127,6 +128,7 @@ class Image extends ActiveRecord
             foreach (Yii::$app->params['image']['size'] as $size => $thumb) {
                 $path = ImageHelper::generatePath($size);
                 $file = Yii::$app->basePath . '/web/' . $path . '/' . $this->name . '.' . $this->file->extension;
+                // TODO: возможно не удаляются фото с альбомов
                 if (file_exists($file)) unlink($file);
                 if (isset($changedAttributes['name'])) {
                     $file = Yii::$app->basePath . '/web/' . $path . '/' . $changedAttributes['name'] . '.' . $this->file->extension;
@@ -166,6 +168,11 @@ class Image extends ActiveRecord
 
         $newFile = $newPath . '/' . $filename;
 
+        $gif = false;
+        if ($model->file->extension === 'gif' && strpos($newFile, 'gif')) {
+            $gif = true;
+        }
+
         $img = \yii\imagine\Image::getImagine()->open($originalFile);
 
         $method = $model->method ? $model->method : @$param['method'];
@@ -203,10 +210,14 @@ class Image extends ActiveRecord
             $x = -round(($param['width'] - $width) / 2);
             $y = -round(($param['height'] - $height) / 2);
 
-            $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
-            $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
-            $img_new->paste($img, new Point(0, 0));
-            $img = $img_new;
+            if ($gif) {
+                $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
+            } else {
+                $img->resize(new Box($width, $height))->crop(new Point($x, $y), new Box($param['width'], $param['height']));
+                $img_new = \yii\imagine\Image::getImagine()->create(new Box($param['width'], $param['height']), $color);
+                $img_new->paste($img, new Point(0, 0));
+                $img = $img_new;
+            }
             $width = $param['width'];
             $height = $param['height'];
         } else if ($method === 'fill') {
@@ -263,11 +274,17 @@ class Image extends ActiveRecord
 
         FileHelper::createDirectory($newPath);
 
-        if ($img->save($newFile, ['jpeg_quality' => Yii::$app->params['image']['jpeg_quality']])) {
-            if (Yii::$app->params['image']['convert']) {
-                exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
+        if ($gif) {
+            if ($img->save($newFile, ['animated' => true])) {
+                return $newFile;
             }
-            return $newFile;
+        } else {
+            if ($img->save($newFile, ['jpeg_quality' => Yii::$app->params['image']['jpeg_quality']])) {
+                if (Yii::$app->params['image']['convert']) {
+                    exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
+                }
+                return $newFile;
+            }
         }
 
         return false;

@@ -27,7 +27,10 @@ class UploadFile extends Model
 
     public $fromUrl = false;
 
-    private $maxSize;
+    public $skipOnEmpty = false;
+
+    public $maxSize;
+
     private $path;
 
     public function init()
@@ -47,7 +50,7 @@ class UploadFile extends Model
         if ($this->fromUrl) {
             $rules = [['file'], 'igogo5yo\uploadfromurl\FileFromUrlValidator', 'extensions' => $this->extensions, 'maxSize' => $this->maxSize];
         } else {
-            $rules = [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => $this->extensions, 'maxSize' => $this->maxSize];
+            $rules = [['file'], 'file', 'skipOnEmpty' => $this->skipOnEmpty, 'extensions' => $this->extensions, 'maxSize' => $this->maxSize];
         }
 
         return [$rules];
@@ -64,7 +67,7 @@ class UploadFile extends Model
     {
         $this->upload = [];
 
-        if ($this->validate()) {
+        if ($this->validate() && $this->file) {
 
             $date = new DateTime();
             $path = $date->format('Y/m/d');
@@ -116,8 +119,8 @@ class UploadFile extends Model
             }
 
             return $this->upload;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }
