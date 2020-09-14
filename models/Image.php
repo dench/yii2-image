@@ -142,7 +142,7 @@ class Image extends ActiveRecord
      * @param Image $model
      * @return bool|string
      */
-    public static function resize($model, $size, $filename = null, $path = null)
+    public static function resize($model, $size, $filename = null, $path = null, $show = false)
     {
         if (empty(Yii::$app->params['image']['size'][$size])) {
             return false;
@@ -272,13 +272,19 @@ class Image extends ActiveRecord
             }
         }
 
-        FileHelper::createDirectory($newPath);
+        if (!$show) {
+            FileHelper::createDirectory($newPath);
+        }
 
         if ($gif) {
             if ($img->save($newFile, ['animated' => true])) {
                 return $newFile;
             }
         } else {
+            if ($show) {
+                echo $img->show('jpg');
+                die();
+            }
             if ($img->save($newFile, ['jpeg_quality' => Yii::$app->params['image']['jpeg_quality']])) {
                 if (Yii::$app->params['image']['convert']) {
                     exec('convert ' . $newFile . ' -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace RGB ' . $newFile);
