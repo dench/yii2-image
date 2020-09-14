@@ -282,7 +282,7 @@ class Image extends ActiveRecord
             }
         } else {
             if ($show) {
-                echo $img->show('jpg');
+                echo $img->show($model->file->extension);
                 die();
             }
             if ($img->save($newFile, ['jpeg_quality' => Yii::$app->params['image']['jpeg_quality']])) {
