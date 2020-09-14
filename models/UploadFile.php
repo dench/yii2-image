@@ -25,6 +25,8 @@ class UploadFile extends Model
 
     public $extensions;
 
+    public $group;
+
     public $fromUrl = false;
 
     public $skipOnEmpty = false;
@@ -100,6 +102,7 @@ class UploadFile extends Model
             }
             $f->name = str_replace('_', '-', $baseName);
             $f->user_id = Yii::$app->user->getId();
+            $f->group = $this->group;
             if ($f->save() && empty($dub)) {
                 $this->file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
             }

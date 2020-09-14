@@ -25,6 +25,8 @@ class UploadFiles extends Model
 
     public $extensions;
 
+    public $group;
+
     private $maxSize;
     private $maxFiles;
     private $path;
@@ -91,6 +93,7 @@ class UploadFiles extends Model
                 $f->path = $dub ? $dub->path : $path;
                 $f->name = $file->baseName;
                 $f->user_id = Yii::$app->user->getId();
+                $f->group = $this->group;
                 if ($f->save() && $dub === null) {
                     $file->saveAs($this->path . '/' .$path . '/' . $f->hash . '.' . $f->extension);
                 }
