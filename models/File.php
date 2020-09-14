@@ -20,6 +20,7 @@ use yii\helpers\Inflector;
  * @property boolean $enabled
  * @property integer $created_at
  * @property integer $user_id
+ * @property string|null $group
  *
  * @property string $downloadKey
  * @property string $downloadName
