@@ -29,6 +29,8 @@ use yii\helpers\FileHelper;
  * @property integer $zoom
  * @property integer $watermark
  *
+ * @property array $newSize
+ *
  * @property File $file
  */
 class Image extends ActiveRecord
@@ -294,5 +296,70 @@ class Image extends ActiveRecord
         }
 
         return false;
+    }
+
+    /**
+     * @param Image $model
+     * @param string $size
+     * @return int[]
+     */
+    public static function newSize($model, $size)
+    {
+        $image = new self($model);
+        return $image->getNewSize($size);
+    }
+
+    public function getNewSize($size)
+    {
+        if (!$size = @Yii::$app->params['image']['size'][$size]) {
+            return [
+                'width' => 0,
+                'height' => 0,
+            ];
+        }
+
+        $method = $size['method'];
+        $maxWidth = $size['width'];
+        $maxHeight = $size['height'];
+
+        if ($maxWidth > $this->width && $maxHeight > $this->height) {
+            $p = $maxWidth / $maxHeight;
+            if ($this->width >= $this->height) {
+                $maxWidth = $this->width;
+                $maxHeight = $maxWidth / $p;
+            } else {
+                $maxHeight = $this->height;
+                $maxWidth = $maxHeight / $p;
+            }
+        }
+
+        if ($method === 'crop') {
+            $k1 = $maxWidth / $this->width;
+            $k2 = $maxHeight / $this->height;
+            $k = $k1 > $k2 ? $k1 : $k2;
+        } else if ($method === 'fill') {
+            $k1 = $maxWidth / $this->width;
+            $k2 = $maxHeight / $this->height;
+            $k = $k1 < $k2 ? $k1 : $k2;
+        } else {
+            // clip
+            $k1 = $maxWidth / $this->width;
+            $k2 = $maxHeight / $this->height;
+            $k = $k1 < $k2 ? $k1 : $k2;
+        }
+
+        if (in_array($this->rotate, [90, 270])) {
+            $size = [
+                'width' => (int)round($this->height * $k),
+                'height' => (int)round($this->width * $k),
+            ];
+        } else {
+            $size = [
+                'width' => (int)round($this->width * $k),
+                'height' => (int)round($this->height * $k),
+            ];
+        }
+
+        return $size;
     }
 }
