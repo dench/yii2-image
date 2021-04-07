@@ -3,6 +3,7 @@
 namespace dench\image\models;
 
 use dench\image\helpers\ImageHelper;
+use Imagick;
 use Imagine\Image\Box;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
@@ -176,6 +177,23 @@ class Image extends ActiveRecord
         }
 
         $img = \yii\imagine\Image::getImagine()->open($originalFile);
+
+        $orientation = $img->getImagick()->getImageOrientation();
+
+        switch ($orientation) {
+            case Imagick::ORIENTATION_RIGHTTOP:
+                $model->rotate = 90;
+                $model->save(false);
+                break;
+            case Imagick::ORIENTATION_BOTTOMRIGHT:
+                $model->rotate = 180;
+                $model->save(false);
+                break;
+            case Imagick::ORIENTATION_LEFTBOTTOM:
+                $model->rotate = 270;
+                $model->save(false);
+                break;
+        }
 
         $method = $model->method ? $model->method : @$param['method'];
 
