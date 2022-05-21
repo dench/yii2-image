@@ -47,7 +47,7 @@ class UploadFiles extends Model
     public function rules()
     {
         return [
-            [['files'], 'file', 'skipOnEmpty' => true, 'extensions' => $this->extensions, 'maxSize' => $this->maxSize, 'maxFiles' => $this->maxFiles],
+            [['files'], 'file', 'skipOnEmpty' => true, 'extensions' => $this->extensions, 'checkExtensionByMimeType' => false, 'maxSize' => $this->maxSize, 'maxFiles' => $this->maxFiles],
         ];
     }
 
@@ -103,7 +103,7 @@ class UploadFiles extends Model
                 if (preg_match('#^image/#', $f->type)) {
                     $image = new Image();
                     $image->file_id = $f->id;
-                    $image->name = null;
+                    $image->name = $f->name;
                     $img = \yii\imagine\Image::getImagine()->open($this->path . '/' . $f->path . '/' . $f->hash . '.' . $f->extension);
                     $image->width = $img->getSize()->getWidth();
                     $image->height = $img->getSize()->getHeight();

@@ -66,7 +66,7 @@ class Image extends ActiveRecord
     public function rules()
     {
         return [
-            [['file_id', 'width', 'height'], 'required'],
+            [['file_id', 'width', 'height', 'name'], 'required'],
             [['file_id', 'rotate', 'mirror', 'width', 'height', 'x', 'y', 'zoom', 'watermark'], 'integer'],
             [['method'], 'string', 'max' => 10],
             [['name', 'alt'], 'string', 'max' => 255],
